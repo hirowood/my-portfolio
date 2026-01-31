@@ -1,6 +1,7 @@
 import Link from 'next/link';
 // ★さっき作った3D部品を読み込み
-import Scene from './components/SpinningBox';
+// import Scene from '../components/SpinningBox';
+import Scene from '@/components/SpinningBox';
 
 export default function Home() {
   return (

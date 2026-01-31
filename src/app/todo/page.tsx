@@ -1,19 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // ★useEffectを追加
 
 export default function TodoPage() {
-  // 1. 基本の記憶（タスク一覧、新規追加用の入力）
   const [tasks, setTasks] = useState<{ id: number; text: string }[]>([]);
   const [input, setInput] = useState("");
-
-  // ★追加：編集のための記憶
-  // editingId: 今編集しているタスクのID（誰も編集してなければ null）
-  // editText: 編集中の文字
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
 
-  // 機能A：タスク追加
+  // ★ロードが完了したかどうかのフラグ
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // --------------------------------------------
+  // ★追加機能1：アプリを開いた瞬間に、データを読み込む
+  // --------------------------------------------
+  useEffect(() => {
+    // ブラウザのノートから "my-todo-tasks" という名前のデータを取り出す
+    const savedTasks = localStorage.getItem("my-todo-tasks");
+    
+    // もしデータがあれば、それを復元する
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+    
+    // 「読み込み完了！」という合図を出す
+    setIsLoaded(true);
+  }, []); // [] は「最初の1回だけ実行する」という意味
+
+  // --------------------------------------------
+  // ★追加機能2：タスクが変わるたびに、自動保存する
+  // --------------------------------------------
+  useEffect(() => {
+    // ロードが終わってから保存を開始する（空っぽで上書きしないように！）
+    if (isLoaded) {
+      localStorage.setItem("my-todo-tasks", JSON.stringify(tasks));
+    }
+  }, [tasks, isLoaded]); // tasks か isLoaded が変わるたびに実行
+
+  // --------------------------------------------
+  // 以下はさっきと同じ機能です
+  // --------------------------------------------
+
   const addTask = () => {
     if (input === "") return;
     const newTask = { id: Date.now(), text: input };
@@ -21,32 +48,27 @@ export default function TodoPage() {
     setInput("");
   };
 
-  // 機能B：削除
   const deleteTask = (id: number) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
-  // ★機能C：編集モードを開始する
   const startEditing = (id: number, currentText: string) => {
-    setEditingId(id);       // 「このIDのやつを編集するぞ！」とマーク
-    setEditText(currentText); // 今の文字を入力欄にセット
+    setEditingId(id);
+    setEditText(currentText);
   };
 
-  // ★機能D：編集を保存する
   const saveTask = (id: number) => {
     const updatedTasks = tasks.map((task) => {
-      // IDが一致したら、文字を書き換える
       if (task.id === id) {
         return { ...task, text: editText };
       }
-      return task; // 違うやつはそのまま
+      return task;
     });
     setTasks(updatedTasks);
-    setEditingId(null); // 編集モード終了
+    setEditingId(null);
     setEditText("");
   };
 
-  // ★機能E：編集キャンセル
   const cancelEditing = () => {
     setEditingId(null);
     setEditText("");
@@ -54,9 +76,8 @@ export default function TodoPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-8">📝 多機能ToDoリスト</h1>
+      <h1 className="text-3xl font-bold mb-8">📝 ずっと残るToDoリスト</h1>
 
-      {/* 新規追加エリア */}
       <div className="flex gap-2 mb-8 w-full max-w-md">
         <input
           type="text"
@@ -73,16 +94,13 @@ export default function TodoPage() {
         </button>
       </div>
 
-      {/* タスク一覧表示エリア */}
       <ul className="w-full max-w-md space-y-2">
         {tasks.map((task) => (
           <li
             key={task.id}
             className="bg-gray-800 p-3 rounded border border-gray-700 flex justify-between items-center min-h-[60px]"
           >
-            {/* ★ここがポイント！編集モードかどうかで表示を切り替える */}
             {editingId === task.id ? (
-              // ■ 編集モードのときの表示（入力欄 + 保存ボタン）
               <div className="flex gap-2 w-full">
                 <input
                   type="text"
@@ -104,7 +122,6 @@ export default function TodoPage() {
                 </button>
               </div>
             ) : (
-              // ■ 通常モードのときの表示（文字 + 編集ボタン + 削除ボタン）
               <>
                 <span className="flex-1 break-all">{task.text}</span>
                 <div className="flex gap-2 ml-4">

@@ -11,20 +11,25 @@ export default function Home() {
           私はWebエンジニアを目指しています。
         </p>
 
-        {/* ボタンを並べるエリア */}
+        {/* ボタンエリア */}
         <div className="flex flex-col gap-4">
           
-          {/* 1. 作品集ページへ */}
           <Link href="/projects">
             <button className="w-64 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg border border-blue-500">
               🎮 ゲーム作品を見る
             </button>
           </Link>
 
-          {/* 2. ToDoアプリへ（今回追加！） */}
           <Link href="/todo">
             <button className="w-64 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg border border-emerald-500">
               📝 ToDoアプリを使う
+            </button>
+          </Link>
+
+          {/* ★今回追加：ダッシュボードへのボタン */}
+          <Link href="/dashboard">
+            <button className="w-64 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg border border-purple-500">
+              🚀 ダッシュボード
             </button>
           </Link>
           

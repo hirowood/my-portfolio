@@ -10,22 +10,20 @@ export default function TodoPage() {
 
   // ★ロードが完了したかどうかのフラグ
   const [isLoaded, setIsLoaded] = useState(false);
-
-  // --------------------------------------------
+  
+// --------------------------------------------
   // ★追加機能1：アプリを開いた瞬間に、データを読み込む
   // --------------------------------------------
   useEffect(() => {
-    // ブラウザのノートから "my-todo-tasks" という名前のデータを取り出す
     const savedTasks = localStorage.getItem("my-todo-tasks");
     
-    // もしデータがあれば、それを復元する
     if (savedTasks) {
+      // eslint-disable-next-line
       setTasks(JSON.parse(savedTasks));
     }
     
-    // 「読み込み完了！」という合図を出す
     setIsLoaded(true);
-  }, []); // [] は「最初の1回だけ実行する」という意味
+  }, []);
 
   // --------------------------------------------
   // ★追加機能2：タスクが変わるたびに、自動保存する

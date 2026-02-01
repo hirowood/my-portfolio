@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+// ★追加: ログアウト機能の読み込み
+import { signOut } from 'next-auth/react';
 
 // ---------------------------------------------------------
 // 型定義
@@ -214,9 +216,21 @@ export default function MissionPage() {
           <h2 className="font-bold text-emerald-400 flex items-center gap-2">
             🚀 Mission Control
           </h2>
-          <span className="text-xs text-gray-500">
-            Task Count: {tasks.length}
-          </span>
+          
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-gray-500">
+              Task Count: {tasks.length}
+            </span>
+            
+            {/* ★ログアウトボタン */}
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="text-xs text-gray-400 hover:text-red-400 border border-gray-700 hover:border-red-500/50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+              title="ログアウト"
+            >
+              🚪 Sign Out
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
@@ -256,7 +270,7 @@ export default function MissionPage() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {/* ★修正: タスクが完了していなければ、子タスクがあってもボタンを表示する */}
+                        {/* ★細分化ボタン (子タスクがない、かつ未完了の場合に表示) */}
                         {!isDone && (
                           <button 
                             onClick={() => breakDownTask(task)}

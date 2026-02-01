@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link'; // ★これが必要です
 
-// メッセージの型定義（誰が、何を言ったか）
 type Message = {
   role: 'user' | 'bot';
   content: string;
@@ -16,14 +16,12 @@ export default function ChatPage() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    // 1. まず自分のメッセージを画面に表示
     const userMessage: Message = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     try {
-      // 2. 裏側（さっき作ったAPI）にメッセージを送信
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,7 +30,6 @@ export default function ChatPage() {
 
       const data = await response.json();
 
-      // 3. AIからの返事を画面に表示
       const botMessage: Message = { role: 'bot', content: data.reply };
       setMessages((prev) => [...prev, botMessage]);
 
@@ -47,18 +44,27 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* ヘッダー */}
-      <header className="p-4 bg-gray-800 border-b border-gray-700 text-center font-bold text-xl">
-        🤖 My AI Assistant
+      {/* ★ヘッダーを変更：戻るボタンを追加 */}
+      <header className="p-4 bg-gray-800 border-b border-gray-700 flex items-center sticky top-0 z-10">
+        <Link 
+          href="/" 
+          className="text-gray-400 hover:text-white transition px-3 py-1 rounded hover:bg-gray-700 mr-4"
+        >
+          ← 戻る
+        </Link>
+        <h1 className="font-bold text-xl flex-1 text-center pr-16">
+          🤖 My AI Assistant
+        </h1>
       </header>
 
-      {/* チャットエリア（ここが会話のログ） */}
+      {/* チャットエリア */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
-          <p className="text-center text-gray-500 mt-10">
-            何か話しかけてみてください！<br />
-            例：「Reactについて教えて」「面白いダジャレを言って」
-          </p>
+          <div className="text-center text-gray-500 mt-20">
+            <p className="text-4xl mb-4">💬</p>
+            <p>何か話しかけてみてください！</p>
+            <p className="text-sm mt-2">Gemini 2.5 Flash がお答えします</p>
+          </div>
         )}
 
         {messages.map((msg, index) => (
@@ -69,8 +75,8 @@ export default function ChatPage() {
             <div
               className={`max-w-[80%] p-3 rounded-lg whitespace-pre-wrap ${
                 msg.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-none' // 自分：青
-                  : 'bg-gray-700 text-gray-100 rounded-bl-none' // AI：グレー
+                  ? 'bg-blue-600 text-white rounded-br-none'
+                  : 'bg-gray-700 text-gray-100 rounded-bl-none'
               }`}
             >
               {msg.content}
@@ -78,7 +84,6 @@ export default function ChatPage() {
           </div>
         ))}
 
-        {/* 考え中...のアニメーション */}
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-gray-700 p-3 rounded-lg rounded-bl-none text-gray-400 animate-pulse">
@@ -92,11 +97,11 @@ export default function ChatPage() {
       <div className="p-4 bg-gray-800 border-t border-gray-700 flex gap-2">
         <input
           type="text"
-          className="flex-1 p-3 rounded bg-gray-900 border border-gray-600 focus:outline-none focus:border-blue-500"
+          className="flex-1 p-3 rounded bg-gray-900 border border-gray-600 focus:outline-none focus:border-blue-500 text-white"
           placeholder="メッセージを入力..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()} // Enterキーでも送信
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         />
         <button
           onClick={sendMessage}

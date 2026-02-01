@@ -43,6 +43,19 @@ export default function Home() {
               🚀 司令室
             </button>
           </Link>
+          {/* AIチャットへのリンクカード */}
+          <Link href="/chat" className="block p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-blue-500 hover:bg-gray-750 transition group">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-white group-hover:text-blue-400">
+              AI Chat 🤖
+            </h2>
+            <span className="text-3xl">✨</span>
+          </div>
+          <p className="text-gray-400">
+            Gemini 2.5 を搭載した最新のAIチャット。<br/>
+            悩み相談からアイデア出しまで。
+          </p>
+        </Link>
         </div>
 
       </main>

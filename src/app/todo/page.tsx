@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react'; // ★useEffectを追加
+import { useState, useEffect } from 'react';
+import Link from 'next/link'; // ★Linkを追加
 
 export default function TodoPage() {
   const [tasks, setTasks] = useState<{ id: number; text: string }[]>([]);
@@ -8,37 +9,31 @@ export default function TodoPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
 
-  // ★ロードが完了したかどうかのフラグ
   const [isLoaded, setIsLoaded] = useState(false);
   
-// --------------------------------------------
-  // ★追加機能1：アプリを開いた瞬間に、データを読み込む
+  // --------------------------------------------
+  // ロード処理
   // --------------------------------------------
   useEffect(() => {
     const savedTasks = localStorage.getItem("my-todo-tasks");
-    
     if (savedTasks) {
-      // eslint-disable-next-line
       setTasks(JSON.parse(savedTasks));
     }
-    
     setIsLoaded(true);
   }, []);
 
   // --------------------------------------------
-  // ★追加機能2：タスクが変わるたびに、自動保存する
+  // 自動保存
   // --------------------------------------------
   useEffect(() => {
-    // ロードが終わってから保存を開始する（空っぽで上書きしないように！）
     if (isLoaded) {
       localStorage.setItem("my-todo-tasks", JSON.stringify(tasks));
     }
-  }, [tasks, isLoaded]); // tasks か isLoaded が変わるたびに実行
+  }, [tasks, isLoaded]);
 
   // --------------------------------------------
-  // 以下はさっきと同じ機能です
+  // タスク操作関数
   // --------------------------------------------
-
   const addTask = () => {
     if (input === "") return;
     const newTask = { id: Date.now(), text: input };
@@ -74,7 +69,19 @@ export default function TodoPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-8">📝 ずっと残るToDoリスト</h1>
+      
+      {/* ★ヘッダー部分（戻るボタン＋タイトル） */}
+      <div className="w-full max-w-md flex items-center justify-center relative mb-8">
+        <Link 
+          href="/" 
+          className="absolute left-0 text-gray-400 hover:text-white transition px-3 py-1 rounded hover:bg-gray-800 text-sm"
+        >
+          ← 戻る
+        </Link>
+        <h1 className="text-3xl font-bold text-center">
+          📝 ずっと残るToDo
+        </h1>
+      </div>
 
       <div className="flex gap-2 mb-8 w-full max-w-md">
         <input
@@ -83,6 +90,7 @@ export default function TodoPage() {
           placeholder="新しいタスクを入力..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && addTask()} // Enterキーで追加できるように改良
         />
         <button
           onClick={addTask}

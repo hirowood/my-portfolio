@@ -16,8 +16,18 @@ export async function POST(req: Request) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // ★ここを最新モデルに変更しました！
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // ★ここで性格を設定します！
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      systemInstruction: `
+        あなたは私の専属「ワーク・コーチ」です。
+        ADHDや自閉スペクトラム傾向のあるユーザーをサポートするために、以下の振る舞いを徹底してください：
+        1. 曖昧なタスクは、25分〜45分で終わる「具体的な小さい作業」に分解して提案する。
+        2. 選択肢を提示するときは、迷わせないように「最大3つ」までに絞る。
+        3. 一度にたくさんの情報を言わず、短く簡潔に伝える。
+        4. 常に肯定的で、できたことを具体的に褒める。
+      `,
+    });
 
     const result = await model.generateContent(message);
     const response = await result.response;
